@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="/dist/output.css" rel="stylesheet" />
+  </head>
+  <body class="flex justify-center p-5">
+    <form>
+      <!-- <div class="bg-blue-800">cklsndlvnsdlvn</div> -->
+      <div>
+        <!-- Apple Pay Button -->
+        <div
+          class="bg-black cursor-pointer h-10 justify-center flex rounded-lg"
+        >
+          <img
+            src="./assets/apple-pay.svg"
+            width="50px"
+            class="text-white mx-32"
+          />
+        </div>
+        <!-- Or pay with section -->
+        <div class="grid grid-cols-3 py-4">
+          <div class="bg-slate-400 my-auto h-[1px] w-full"></div>
+          <div class="mx-2 text-center"><text>Or pay with card</text></div>
+          <div class="bg-slate-400 my-auto h-[1px] w-full"></div>
+        </div>
+
+        <!-- Name on card -->
+        <div class="flex flex-col text-sm">
+          <div class="flex justify-between">
+            <label for="name" pattern="[0-9\s]{13,19}" class="pb-2"
+              >Name on card</label
+            >
+            <label
+              id="required"
+              class="text-red-500 delay-200 transition text-xs my-auto invisible peer-invalid:visible"
+              >REQUIRED</label
+            >
+          </div>
+
+          <input
+            type="text"
+            placeholder="Name on card"
+            name="name"
+            id="nameOnTheCard"
+            required
+            onblur="checkName()"
+            class="peer peer-invalid:outline-none border-[1px] focus:outline-none focus:border-blue-300 focus:outline-offset-0 focus:outline-blue-200 focus:border-2 mx-2 p-3 shadow-lg placeholder:text-gray-500 rounded-lg border-slate-200"
+          />
+
+          <text
+            id="nameValidation"
+            class="text-red-500 text-sm p-3 hidden"
+          ></text>
+        </div>
+
+        <!-- Card Information Section -->
+        <div class="relative flex flex-col text-sm pt-7">
+          <div class="flex justify-between">
+            <label for="cardNumber" class="pb-2">Card information</label>
+            <label
+              id="requiredCardInfo"
+              class="text-red-500 delay-200 transition text-xs my-auto invisible peer-invalid:visible"
+              >REQUIRED</label
+            >
+          </div>
+          <text class="pb-2"></text>
+          <input
+            id="cardNumber"
+            data-mask="0000 0000 0000 0000"
+            onblur="checkRequiredNumber()"
+            placeholder="1234 5678 9101 1121"
+            class="border-[1px] z-0 focus:z-10 focus:outline-none focus:border-blue-300 focus:outline-offset-0 focus:outline-blue-200 focus:border-2 placeholder:text-gray-500 mx-2 p-3 shadow-lg rounded-t-lg border-slate-200"
+          />
+
+          <img
+            class="absolute top-[75px] right-3 z-10"
+            src="./assets/cards.png"
+            width="150px"
+          />
+          <div class="grid grid-cols-2 gap-0">
+            <input
+              data-mask="00/00"
+              id="cardExpiry"
+              onblur="checkRequiredExpiry()"
+              placeholder="MM/YY"
+              class="border-[1px] z-0 focus:z-10 focus:outline-none focus:border-blue-300 focus:outline-offset-0 focus:outline-blue-200 focus:border-2 placeholder:text-gray-500 p-3 ml-2 py-3 shadow-lg rounded-bl-lg border-slate-200"
+            />
+            <input
+              id="cardCvv"
+              onblur="checkRequiredCvv()"
+              placeholder="CVV"
+              data-mask="000"
+              class="border-[1px] z-10 focus:z-10 focus:outline-none focus:border-blue-300 focus:outline-offset-0 focus:outline-blue-200 focus:border-2 placeholder:text-gray-500 p-3 mr-2 py-3 shadow-lg rounded-br-lg border-slate-200"
+            />
+          </div>
+          <text
+            id="cardValidation"
+            class="text-red-500 text-sm p-3 hidden"
+          ></text>
+        </div>
+        <!-- Pay Button -->
+        <div
+          class="bg-blue-900 cursor-pointer h-10 my-7 text-white text-xl justify-center flex rounded-lg"
+        >
+          <text class="my-auto">Pay SAR 10.20</text>
+        </div>
+      </div>
+    </form>
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.js"></script>
+
+    <script>
+      //card Expiry Validation
+      function checkRequiredExpiry() {
+        let element = document.getElementById('cardExpiry');
+        let req = document.getElementById('requiredCardInfo');
+        let cardValidation = document.getElementById('cardValidation');
+        //required date
+        if (element.value === '') {
+          if (req.classList.contains('invisible')) {
+            req.classList.remove('invisible');
+            req.classList.add('visible');
+          }
+          if (!req.classList.contains('border-red-500')) {
+            element.classList.add('border-red-500');
+            console.log(element);
+          }
+        } else {
+          if (
+            !(
+              document
+                .getElementById('cardCvv')
+                .classList.contains('border-red-500') ||
+              document
+                .getElementById('cardNumber')
+                .classList.contains('border-red-500')
+            )
+          ) {
+            if (!req.classList.contains('invisible')) {
+              {
+                req.classList.add('invisible');
+              }
+            }
+          }
+          req.classList.remove('visible');
+
+          element.classList.remove('border-red-500');
+        }
+        //invalid date error
+        if (element.value.length < 5) {
+          cardValidation.classList.remove('hidden');
+          cardValidation.classList.add('block');
+          element.classList.add('border-red-500');
+          cardValidation.innerText = 'Invalid date';
+        } else {
+          cardValidation.classList.add('hidden');
+          element.classList.remove('border-red-500');
+          cardValidation.classList.remove('block');
+        }
+        //invalid month
+        if (parseInt(element.value.toString().substring(0, 2)) > 12) {
+          element.classList.add('border-red-500');
+          cardValidation.classList.remove('hidden');
+          cardValidation.classList.add('block');
+          cardValidation.innerText = 'Invalid Month';
+        } else {
+          element.classList.remove('border-red-500');
+          cardValidation.classList.add('hidden');
+          cardValidation.classList.remove('block');
+        }
+      }
+
+      //card Number Validation
+      function checkRequiredNumber() {
+        let element = document.getElementById('cardNumber');
+        let req = document.getElementById('requiredCardInfo');
+
+        //required
+        if (element.value === '') {
+          if (req.classList.contains('invisible')) {
+            req.classList.remove('invisible');
+            req.classList.add('visible');
+          }
+          if (!req.classList.contains('border-red-500')) {
+            element.classList.add('border-[1px]');
+            element.classList.add('border-red-500');
+            console.log(element);
+          }
+        } else {
+          if (
+            !(
+              document
+                .getElementById('cardCvv')
+                .classList.contains('border-red-500') ||
+              document
+                .getElementById('cardExpiry')
+                .classList.contains('border-red-500')
+            )
+          ) {
+            if (!req.classList.contains('invisible')) {
+              {
+                req.classList.add('invisible');
+              }
+            }
+          }
+          req.classList.remove('visible');
+
+          element.classList.remove('border-red-500');
+        }
+
+        // invalid length
+        if (element.value.length < 19) {
+          cardValidation.classList.remove('hidden');
+          cardValidation.classList.add('block');
+          element.classList.add('border-red-500');
+          cardValidation.innerText = 'Invalid credit card';
+        } else {
+          cardValidation.classList.add('hidden');
+          element.classList.remove('border-red-500');
+          cardValidation.classList.remove('block');
+        }
+      }
+
+      function checkRequiredCvv() {
+        let element = document.getElementById('cardCvv');
+        let req = document.getElementById('requiredCardInfo');
+        //requiredcvv
+        if (element.value === '') {
+          if (req.classList.contains('invisible')) {
+            req.classList.remove('invisible');
+            req.classList.add('visible');
+          }
+          if (!req.classList.contains('border-red-500')) {
+            element.classList.add('border-[1px]');
+            element.classList.add('border-red-500');
+            console.log(element);
+          }
+        } else {
+          if (
+            !(
+              document
+                .getElementById('cardNumber')
+                .classList.contains('border-red-500') ||
+              document
+                .getElementById('cardExpiry')
+                .classList.contains('border-red-500')
+            )
+          ) {
+            if (!req.classList.contains('invisible')) {
+              {
+                req.classList.add('invisible');
+              }
+            }
+          }
+          req.classList.remove('visible');
+
+          element.classList.remove('border-red-500');
+        }
+        //invalid cvv
+        if (element.value.toString().length < 3) {
+          cardValidation.classList.remove('hidden');
+          cardValidation.classList.add('block');
+          element.classList.add('border-red-500');
+          cardValidation.innerText = 'Invalid CVV';
+        } else {
+          element.classList.remove('border-red-500');
+          cardValidation.classList.add('hidden');
+          cardValidation.classList.remove('block');
+        }
+      }
+      function checkName() {
+        let name = document.getElementById('nameOnTheCard');
+        let nameValidation = document.getElementById('nameValidation');
+
+        let req = document.getElementById('required');
+
+        // Name on card required check
+        if (name.value === '') {
+          req.classList.remove('invisible');
+          req.classList.add('visible');
+          name.classList.add('border-red-500');
+        } else if (req.classList.contains('visible')) {
+          req.classList.add('invisible');
+          req.classList.remove('visible');
+          name.classList.remove('border-red-500');
+        }
+        // Both first and last name check
+        if (!name.value.trim().includes(' ')) {
+          nameValidation.classList.remove('hidden');
+          nameValidation.classList.add('block');
+          nameValidation.innerText = 'Both first and last name are required';
+          name.classList.add('border-red-500');
+        } else if (!nameValidation.classList.contains('hidden')) {
+          nameValidation.classList.add('hidden');
+          name.classList.remove('border-red-500');
+          nameValidation.classList.remove('block');
+        }
+        // contain number check
+        if (/\d/.test(name.value.trim())) {
+          nameValidation.classList.remove('hidden');
+          nameValidation.classList.add('block');
+          nameValidation.innerText =
+            'Name may only have English alphabet and spaces';
+          name.classList.add('border-red-500');
+        }
+      }
+    </script>
+  </body>
+</html>
